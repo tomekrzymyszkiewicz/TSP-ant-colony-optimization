@@ -332,7 +332,13 @@ int select_vertex(ant current, float alpha, float beta,float** pheromone_matrix)
     float denominator = 0;
     float nominator = 0;
     for(vector<int>::iterator it = current.unvisited.begin(); it != current.unvisited.end(); it++){
-        denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)],alpha)*(float)pow(1/(float)current_graph_adjacency_matrix.matrix[current.current_vertex][(*it)],beta);
+        if(current_graph_adjacency_matrix.matrix[current.current_vertex][(*it)] != 0){
+            denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)],alpha)*(float)pow(1/(float)current_graph_adjacency_matrix.matrix[current.current_vertex][(*it)],beta);
+        }
+        else{
+            denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)],alpha)*(float)pow(1,beta);
+        }
+        
     }
     for(int i = 1; i < number_of_current_graph_vertices; i++){
         if(find(current.path.begin(),current.path.end(),i) != current.path.end() || i == current.current_vertex){
