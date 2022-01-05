@@ -13,18 +13,17 @@
 using namespace std;
 using namespace std::chrono;
 
-vector<vector<string>> tasks;
-vector<string> results;
-string results_file_name = "";
+vector<vector<std::string>> tasks;
+vector<std::string> results;
+std::string results_file_name = "";
 int number_of_current_graph_vertices = 0;
 adjacency_matrix current_graph_adjacency_matrix = adjacency_matrix();
-int *path_array;
 
 struct Result
 {
-    string graph_name;
-    string calculated_path;
-    string defined_path;
+    std::string graph_name;
+    std::string calculated_path;
+    std::string defined_path;
     int calculated_path_weight;
     int defined_path_weight;
     double time;
@@ -32,9 +31,9 @@ struct Result
     float alpha;
     float b;
     int era_length;
-    string cooling_method;
-    string neighborhood_method;
-    Result(string graph_name, string calculated_path, int calculated_path_weight, string defined_path, int defined_path_weight, double time, int number_of_repeats, float alpha, float b, int era_length, string cooling_method, string neighborhood_method)
+    std::string cooling_method;
+    std::string neighborhood_method;
+    Result(std::string graph_name, std::string calculated_path, int calculated_path_weight, std::string defined_path, int defined_path_weight, double time, int number_of_repeats, float alpha, float b, int era_length, std::string cooling_method, std::string neighborhood_method)
     {
         this->graph_name = graph_name;
         this->calculated_path = calculated_path;
@@ -49,13 +48,13 @@ struct Result
         this->cooling_method = cooling_method;
         this->neighborhood_method = neighborhood_method;
     }
-    string toString()
+    std::string toString()
     {
         return (graph_name + "," + calculated_path + "," + to_string(calculated_path_weight) + "," + defined_path + "," + to_string(defined_path_weight) + "," + to_string(time) + "," + to_string(number_of_repeats) + "," + to_string(alpha) + "," + to_string(b) + "," + to_string(era_length) + "," + cooling_method + "," + neighborhood_method);
     }
 };
 
-void save_results(string results_file_name)
+void save_results(std::string results_file_name)
 {
     std::cout << "Saving results" << endl;
     fstream fout;
@@ -100,7 +99,7 @@ static inline void rtrim(std::string &s)
             s.end());
 }
 
-bool load_data(string file_name)
+bool load_data(std::string file_name)
 {
     std::cout << "Loading data from " << file_name << " file" << endl;
     ifstream fin;
@@ -111,18 +110,18 @@ bool load_data(string file_name)
         fin.close();
         return false;
     }
-    string loaded_source, loaded_destination, loaded_weight;
-    string loaded_number_of_vertices;
+    std::string loaded_source, loaded_destination, loaded_weight;
+    std::string loaded_number_of_vertices;
     getline(fin, loaded_number_of_vertices);
     number_of_current_graph_vertices = stoi(loaded_number_of_vertices);
     current_graph_adjacency_matrix = adjacency_matrix(number_of_current_graph_vertices);
     for (int i = 0; i < number_of_current_graph_vertices; i++)
     {
-        string loaded_line_of_matrix = "";
+        std::string loaded_line_of_matrix = "";
         getline(fin, loaded_line_of_matrix);
         ltrim(loaded_line_of_matrix);
         rtrim(loaded_line_of_matrix);
-        vector<string> single_line = split(loaded_line_of_matrix, ' ');
+        vector<std::string> single_line = split(loaded_line_of_matrix, ' ');
         std::vector<std::string>::iterator it = single_line.begin();
         while (it != single_line.end())
         {
@@ -144,7 +143,6 @@ bool load_data(string file_name)
     }
     std::cout << "Loaded correctly graph with " << number_of_current_graph_vertices << " vertices" << endl
               << "Graph:" << endl;
-    // current_graph_adjacency_matrix.print();
     fin.close();
     return true;
 }
@@ -160,14 +158,14 @@ void load_config()
         fin.close();
         return;
     }
-    string loaded_line_of_task = "";
+    std::string loaded_line_of_task = "";
     getline(fin, results_file_name);
     ltrim(results_file_name);
     rtrim(results_file_name);
     std::cout << "Loaded result file name: " << results_file_name << endl;
     while (getline(fin, loaded_line_of_task))
     {
-        vector<string> single_line = split(loaded_line_of_task, ' ');
+        vector<std::string> single_line = split(loaded_line_of_task, ' ');
         std::vector<std::string>::iterator it = single_line.begin();
         while (it != single_line.end())
         {
@@ -182,7 +180,7 @@ void load_config()
                 ++it;
             }
         }
-        string graph_file_name, number_of_repeats, alpha, b, era_length, cooling_method, neighborhood_method, shortest_path_weight, shortest_path;
+        std::string graph_file_name, number_of_repeats, alpha, b, era_length, cooling_method, neighborhood_method, shortest_path_weight, shortest_path;
         if (single_line.size() >= 8)
         {
             graph_file_name = single_line[0];
@@ -205,7 +203,7 @@ void load_config()
         }
         else
         {
-            vector<string> task;
+            vector<std::string> task;
             task.push_back(graph_file_name);
             task.push_back(number_of_repeats);
             task.push_back(alpha);
@@ -230,16 +228,10 @@ void load_config()
 int cost_of_permutation(vector<int> permutation)
 {
     int cost = 0;
-    for(int i = 0; i < permutation.size()-1; i++)
+    for (int i = 0; i < permutation.size() - 1; i++)
     {
         cost += current_graph_adjacency_matrix.matrix[permutation[i]][permutation[i + 1]];
     }
-    // int cost = current_graph_adjacency_matrix.matrix[0][permutation[0]];
-    // for (int i = 0; i < number_of_current_graph_vertices - 2; i++)
-    // {
-    //     cost += current_graph_adjacency_matrix.matrix[permutation[i]][permutation[i + 1]];
-    // }
-    // cost += current_graph_adjacency_matrix.matrix[permutation[permutation.size() - 1]][0];
     return cost;
 }
 
@@ -283,10 +275,9 @@ vector<int> initial_permutation()
     return permutation;
 }
 
-
-string print_vector(vector<int> printed_vector)
+std::string print_vector(vector<int> printed_vector)
 {
-    string answer;
+    std::string answer;
     for (long unsigned int i = 0; i < printed_vector.size(); i++)
     {
         answer += to_string(printed_vector[i]);
@@ -295,81 +286,97 @@ string print_vector(vector<int> printed_vector)
     return answer;
 }
 
-
-float approximated_solution_cost(vector<int> permutation, float alpha){
+float approximated_solution_cost(vector<int> permutation, float alpha)
+{
     return cost_of_permutation(permutation) * alpha;
 }
 
-float** init_pheromone_matrix(int number_of_ants,float approximated_sol){
-    float** matrix = new float*[number_of_ants];
-    float init_tau = number_of_ants/approximated_sol;
-    for(int i = 0; i < number_of_ants; i++){
+float **init_pheromone_matrix(int number_of_ants, float approximated_sol, float init_tau_param)
+{
+    float **matrix = new float *[number_of_ants];
+    float init_tau = (number_of_ants / approximated_sol) * init_tau_param;
+    for (int i = 0; i < number_of_ants; i++)
+    {
         matrix[i] = new float[number_of_ants];
-        for(int j = 0; j < number_of_ants; j++){
+        for (int j = 0; j < number_of_ants; j++)
+        {
             matrix[i][j] = init_tau;
         }
     }
     return matrix;
 }
 
-
-vector<ant> init_colony(int number_of_ants){
+vector<ant> init_colony(int number_of_ants)
+{
     vector<ant> colony;
-    for(int i = 0; i < number_of_ants; i++){
-        colony.push_back(ant(number_of_current_graph_vertices,(i%(number_of_current_graph_vertices-1))+1));
+    for (int i = 0; i < number_of_ants; i++)
+    {
+        colony.push_back(ant(number_of_current_graph_vertices, (i % (number_of_current_graph_vertices - 1)) + 1));
     }
     return colony;
 }
 
-bool sort_by_sec(const pair<int,float> &a,
-              const pair<int,float> &b)
+bool sort_by_sec(const pair<int, float> &a,
+                 const pair<int, float> &b)
 {
     return (a.second < b.second);
 }
 
-int select_vertex(ant current, float alpha, float beta,float** pheromone_matrix){
-    vector<pair<int,float>> probabilities; //prawdopodobieństwa wierzchołek prawdopodobieństwo
+int select_vertex(ant current, float alpha, float beta, float **pheromone_matrix)
+{
+    vector<pair<int, float>> probabilities;
     float denominator = 0;
     float nominator = 0;
-    for(vector<int>::iterator it = current.unvisited.begin(); it != current.unvisited.end(); it++){
-        if(current_graph_adjacency_matrix.matrix[current.current_vertex][(*it)] != 0){
-            denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)],alpha)*(float)pow(1/(float)current_graph_adjacency_matrix.matrix[current.current_vertex][(*it)],beta);
+    for (vector<int>::iterator it = current.unvisited.begin(); it != current.unvisited.end(); it++)
+    {
+        if (current_graph_adjacency_matrix.matrix[current.current_vertex][(*it)] != 0)
+        {
+            denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)], alpha) * (float)pow(1 / (float)current_graph_adjacency_matrix.matrix[current.current_vertex][(*it)], beta);
         }
-        else{
-            denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)],alpha)*(float)pow(1,beta);
+        else
+        {
+            denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)], alpha) * (float)pow(1, beta);
         }
-        
     }
-    for(int i = 1; i < number_of_current_graph_vertices; i++){
-        if(find(current.path.begin(),current.path.end(),i) != current.path.end() || i == current.current_vertex){
-            probabilities.push_back(make_pair(i,0));
-            continue;    
-        } 
-        nominator = (float)pow(pheromone_matrix[current.current_vertex][i],alpha)*(float)pow(1/(float)current_graph_adjacency_matrix.matrix[current.current_vertex][i],beta);
-        probabilities.push_back(make_pair(i,nominator/denominator));
+    for (int i = 1; i < number_of_current_graph_vertices; i++)
+    {
+        if (find(current.path.begin(), current.path.end(), i) != current.path.end() || i == current.current_vertex)
+        {
+            probabilities.push_back(make_pair(i, 0));
+            continue;
+        }
+        nominator = (float)pow(pheromone_matrix[current.current_vertex][i], alpha) * (float)pow(1 / (float)current_graph_adjacency_matrix.matrix[current.current_vertex][i], beta);
+        probabilities.push_back(make_pair(i, nominator / denominator));
     }
-    sort(probabilities.begin(),probabilities.end(),sort_by_sec);
+    sort(probabilities.begin(), probabilities.end(), sort_by_sec);
     random_device rd;
     mt19937 gen(rd());
     uniform_real_distribution<> dis(0, 1);
     float random = dis(gen);
     float probabilities_sum = 0;
-    for(int i = 0; i < probabilities.size(); i++){
+    for (int i = 0; i < probabilities.size(); i++)
+    {
         probabilities_sum += probabilities[i].second;
-        if(probabilities_sum > random) return probabilities[i].first;
+        if (probabilities_sum > random)
+            return probabilities[i].first;
     }
 }
 
-float** evaporateCAS(float** pheromone_matrix, vector<ant> colony, float rho,int q_cycles){
-    for(int i = 0; i < number_of_current_graph_vertices; i++){
-        for(int j = 0; j < number_of_current_graph_vertices; j++){
+float **evaporateCAS(float **pheromone_matrix, vector<ant> colony, float rho, int q_cycles)
+{
+    for (int i = 0; i < number_of_current_graph_vertices; i++)
+    {
+        for (int j = 0; j < number_of_current_graph_vertices; j++)
+        {
             pheromone_matrix[i][j] *= rho;
         }
     }
-    for(vector<ant>::iterator it = colony.begin(); it != colony.end(); it++){
+    for (vector<ant>::iterator it = colony.begin(); it != colony.end(); it++)
+    {
         int cost_of_path = cost_of_permutation(it->path);
-        for(int i = 0; i < it->path.size()-1 ;i++){
-            pheromone_matrix[it->path[i]][it->path[i+1]] += (float)q_cycles/cost_of_path;
+        for (int i = 0; i < it->path.size() - 1; i++)
+        {
+            pheromone_matrix[it->path[i]][it->path[i + 1]] += (float)q_cycles / cost_of_path;
         }
     }
     return pheromone_matrix;
@@ -382,35 +389,41 @@ float** evaporateCAS(float** pheromone_matrix, vector<ant> colony, float rho,int
 pair<vector<int>, int> TSP_solve()
 {
     vector<int> permutation = initial_permutation();
-    int cost = cost_of_permutation(permutation) + current_graph_adjacency_matrix.matrix[0][permutation[0]] + current_graph_adjacency_matrix.matrix[permutation[permutation.size()-1]][0];
+    int cost = cost_of_permutation(permutation) + current_graph_adjacency_matrix.matrix[0][permutation[0]] + current_graph_adjacency_matrix.matrix[permutation[permutation.size() - 1]][0];
     int iterations = 100;
     int number_of_ants = number_of_current_graph_vertices;
-    float alpha = 1; // wpływ feromonu na decyzję
-    float rho = 0.6; // współczynnik parowania z przedziału 0,1 0 - wszystko wyparowuje 1 - nic nie wyparowuje
-    float beta = 3; // wpływ długości krawędzi na decyzję
+    float alpha = 1; // pheromone factor
+    float rho = 0.6; // evaporation factor in range 0,1 0 - everything evaporate 1 - nothing evaporate
+    float beta = 3;  // edge length factor
     float evaporation = 0.5;
+    float init_tau_param = 1;
     int q_cycles = 100;
-    float approximated_sol = approximated_solution_cost(permutation,alpha);
-    float** pheromone_matrix = init_pheromone_matrix(number_of_ants,approximated_sol);
-
-    for(int iteration = 0; iteration < iterations; iteration ++){
+    float approximated_sol = approximated_solution_cost(permutation, alpha);
+    float **pheromone_matrix = init_pheromone_matrix(number_of_ants, approximated_sol, init_tau_param);
+    // defined number of iterations
+    for (int iteration = 0; iteration < iterations; iteration++)
+    {
         vector<ant> colony = init_colony(number_of_ants);
-        for(vector<ant>::iterator ant_it = colony.begin(); ant_it != colony.end(); ant_it++){
-        // for(int ant_num = 0; ant_num < number_of_ants; ant_num++){
-            for(int i = 0; i < number_of_current_graph_vertices - 2; i++){
-                int next_vertex = select_vertex((*ant_it),alpha,beta,pheromone_matrix);
+        // travel of every ant
+        for (vector<ant>::iterator ant_it = colony.begin(); ant_it != colony.end(); ant_it++)
+        {
+            // travel of ant_it (N-2 moves)
+            for (int i = 0; i < number_of_current_graph_vertices - 2; i++)
+            {
+                int next_vertex = select_vertex((*ant_it), alpha, beta, pheromone_matrix);
                 (*ant_it).go_to_vertex(next_vertex);
             }
             vector<int> ant_permutation = ant_it->path;
-            int ant_cost = cost_of_permutation(ant_it->path) + current_graph_adjacency_matrix.matrix[0][ant_it->path[0]] + current_graph_adjacency_matrix.matrix[ant_it->path[ant_it->path.size()-1]][0];
-            if(ant_cost < cost){
+            int ant_cost = cost_of_permutation(ant_it->path) + current_graph_adjacency_matrix.matrix[0][ant_it->path[0]] + current_graph_adjacency_matrix.matrix[ant_it->path[ant_it->path.size() - 1]][0];
+            if (ant_cost < cost)
+            {
                 cost = ant_cost;
                 permutation = ant_it->path;
             }
         }
-        pheromone_matrix = evaporateCAS(pheromone_matrix,colony,rho,q_cycles);
+        pheromone_matrix = evaporateCAS(pheromone_matrix, colony, rho, q_cycles);
     }
-    permutation.insert(permutation.begin(),0);
+    permutation.insert(permutation.begin(), 0);
     permutation.push_back(0);
     return make_pair(permutation, cost);
 }
@@ -431,7 +444,7 @@ int main()
             std::cout << endl
                       << "##################################################" << endl
                       << endl;
-            string graph_file_name = tasks[i][0];
+            std::string graph_file_name = tasks[i][0];
             int number_of_repeats = stoi(tasks[i][1]);
             float alpha = stof(tasks[i][2]);
             float b = stof(tasks[i][3]);
@@ -446,8 +459,8 @@ int main()
                 neighborhood_method = false;
             else if (tasks[i][6] == "invert")
                 neighborhood_method = true;
-            string shortest_path_weight = tasks[i][7];
-            string shortest_path = tasks[i][8];
+            std::string shortest_path_weight = tasks[i][7];
+            std::string shortest_path = tasks[i][8];
             ltrim(shortest_path);
             rtrim(shortest_path);
             if (!load_data(graph_file_name))
