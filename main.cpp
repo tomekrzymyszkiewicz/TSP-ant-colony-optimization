@@ -447,40 +447,37 @@ int main()
     {
         for (long unsigned int i = 0; i < tasks.size(); i++)
         {
-            std::cout << endl
-                      << "##################################################" << endl
-                      << endl;
+            std::cout << endl;
+            std::cout << "##################################################" << endl;
+            std::cout << endl;
             std::string graph_file_name = tasks[i][0];
             int number_of_repeats = stoi(tasks[i][1]);
             float alpha = stof(tasks[i][2]);
-            float b = stof(tasks[i][3]);
-            int era_length = stoi(tasks[i][4]);
-            bool cooling_method = true;
-            if (tasks[i][5] == "geo")
-                cooling_method = false;
-            else if (tasks[i][5] == "boltzmann")
-                cooling_method = true;
-            bool neighborhood_method = true;
-            if (tasks[i][6] == "swap")
-                neighborhood_method = false;
-            else if (tasks[i][6] == "invert")
-                neighborhood_method = true;
-            std::string shortest_path_weight = tasks[i][7];
-            std::string shortest_path = tasks[i][8];
+            float beta = stof(tasks[i][3]);
+            float rho = stof(tasks[i][4]);
+            int iterations = stoi(tasks[i][5]);
+            int number_of_ants = stoi(tasks[i][6]);
+            float init_tau_param = stoi(tasks[i][7]);
+            int quantity_of_pheromone = stoi(tasks[i][8]);
+            std::string evaporation_method = tasks[i][9];
+            std::string shortest_path_weight = tasks[i][10];
+            std::string shortest_path = tasks[i][11];
             ltrim(shortest_path);
             rtrim(shortest_path);
             if (!load_data(graph_file_name))
             {
                 std::cout << "Cannot load graph from " << graph_file_name << " file." << endl;
             }
-            std::cout << "Computing TSP in " << graph_file_name << " graph repeated " << number_of_repeats << " times" << endl
-                      << "alpha: " << alpha << endl
-                      << "era_length: " << era_length << endl
-                      << "cooling method: " << tasks[i][5] << endl;
-            if (cooling_method)
-                std::cout << "b: " << b << endl;
-            std::cout << "neighborhood method: " << tasks[i][6] << endl
-                      << "defined weight: " << shortest_path_weight << endl
+            std::cout << "Computing TSP in " << graph_file_name << " graph repeated " << number_of_repeats << " times" << endl;
+            std::cout << "alpha: " << alpha << endl;
+            std::cout << "beta: " << beta << endl;
+            std::cout << "rho: " << rho << endl;
+            std::cout << "iterations: " << iterations << endl;
+            std::cout << "number of ants: " << number_of_ants << endl;
+            std::cout << "init tau parameter: " << init_tau_param << endl;
+            std::cout << "quantity_of_pheromone: " << quantity_of_pheromone << endl;
+            std::cout << "evaporation method: " << evaporation_method << endl;
+            std::cout << "defined weight: " << shortest_path_weight << endl
                       << endl;
             if (number_of_current_graph_vertices < 1)
             {
@@ -496,7 +493,7 @@ int main()
                 for (int j = 0; j < number_of_repeats; j++)
                 {
                     high_resolution_clock::time_point t_start = high_resolution_clock::now();
-                    answer = TSP_solve();
+                    answer = TSP_solve(alpha,beta,rho,iterations,number_of_ants,init_tau_param,quantity_of_pheromone,evaporation_method);
                     high_resolution_clock::time_point t_end = high_resolution_clock::now();
                     duration<double> time_span = duration_cast<duration<double>>(t_end - t_start);
                     int weight = answer.second;
@@ -519,8 +516,8 @@ int main()
                               << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl
                               << "Task " << i + 1 << " from " << tasks.size() << " | Repeat " << j + 1 << " from " << number_of_repeats << endl
                               << endl;
-                    Result result = Result(graph_file_name, path, weight, shortest_path, stoi(shortest_path_weight), time_span.count(), number_of_repeats, alpha, b, era_length, tasks[i][5], tasks[i][6]);
-                    results.push_back(result.toString());
+                    // Result result = Result(graph_file_name, path, weight, shortest_path, stoi(shortest_path_weight), time_span.count(), number_of_repeats, alpha, b, era_length, tasks[i][5], tasks[i][6]);
+                    // results.push_back(result.toString());
                 }
             }
         }
