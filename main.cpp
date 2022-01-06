@@ -180,24 +180,27 @@ void load_config()
                 ++it;
             }
         }
-        std::string graph_file_name, number_of_repeats, alpha, b, era_length, cooling_method, neighborhood_method, shortest_path_weight, shortest_path;
-        if (single_line.size() >= 8)
+        std::string graph_file_name, number_of_repeats, alpha, beta, rho, iterations, number_of_ants, init_tau_param, quantity_of_pheromone, evaporation_method, shortest_path_weight, shortest_path;
+        if (single_line.size() >= 10)
         {
             graph_file_name = single_line[0];
             number_of_repeats = single_line[1];
             alpha = single_line[2];
-            b = single_line[3];
-            era_length = single_line[4];
-            cooling_method = single_line[5];
-            neighborhood_method = single_line[6];
-            shortest_path_weight = single_line[7];
-            for (long unsigned int i = 8; i < single_line.size(); i++)
+            beta = single_line[3];
+            rho = single_line[4];
+            iterations = single_line[5];
+            number_of_ants = single_line[6];
+            init_tau_param = single_line[7];
+            quantity_of_pheromone = single_line[8];
+            evaporation_method = single_line[9];
+            shortest_path_weight = single_line[10];
+            for (long unsigned int i = 11; i < single_line.size(); i++)
             {
                 shortest_path += single_line[i];
                 shortest_path += " ";
             }
         }
-        if (graph_file_name.size() == 0 || number_of_repeats.size() == 0 || alpha.size() == 0 || b.size() == 0 || era_length.size() == 0 || cooling_method.size() == 0 || neighborhood_method.size() == 0 || shortest_path_weight.size() == 0)
+        if (graph_file_name.size() == 0 || number_of_repeats.size() == 0 || alpha.size() == 0 || beta.size() == 0 || rho.size() == 0 || iterations.size() == 0 || number_of_ants.size() == 0 || number_of_ants.size() == 0 || init_tau_param.size() == 0 || quantity_of_pheromone.size() == 0 || evaporation_method.size() == 0 || shortest_path_weight.size() == 0)
         {
             std::cout << "Cannot load this task: " << loaded_line_of_task << endl;
         }
@@ -207,10 +210,13 @@ void load_config()
             task.push_back(graph_file_name);
             task.push_back(number_of_repeats);
             task.push_back(alpha);
-            task.push_back(b);
-            task.push_back(era_length);
-            task.push_back(cooling_method);
-            task.push_back(neighborhood_method);
+            task.push_back(beta);
+            task.push_back(rho);
+            task.push_back(iterations);
+            task.push_back(number_of_ants);
+            task.push_back(init_tau_param);
+            task.push_back(quantity_of_pheromone);
+            task.push_back(evaporation_method);
             task.push_back(shortest_path_weight);
             task.push_back(shortest_path);
             tasks.push_back(task);
@@ -394,7 +400,7 @@ float **evaporateCAS(float **pheromone_matrix, vector<ant> colony, float rho, in
  * 
  * @return pair of calculated path and weight
  */
-pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.6, int iterations = 100, int number_of_ants = number_of_current_graph_vertices, float init_tau_param = 1, int quantity_of_pheromone = 100, string evaporation_method = "QAS")
+pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.6, int iterations = 100, int number_of_ants = number_of_current_graph_vertices, float init_tau_param = 1, int quantity_of_pheromone = 100, string evaporation_method = "CAS")
 {
     vector<int> permutation = initial_permutation();
     int cost = cost_of_permutation(permutation) + current_graph_adjacency_matrix.matrix[0][permutation[0]] + current_graph_adjacency_matrix.matrix[permutation[permutation.size() - 1]][0];
