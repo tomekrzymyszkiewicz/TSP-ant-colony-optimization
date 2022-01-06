@@ -18,7 +18,6 @@ vector<std::string> results;
 std::string results_file_name = "";
 int number_of_current_graph_vertices = 0;
 adjacency_matrix current_graph_adjacency_matrix = adjacency_matrix();
-
 struct Result
 {
     std::string graph_name;
@@ -29,11 +28,15 @@ struct Result
     double time;
     int number_of_repeats;
     float alpha;
-    float b;
-    int era_length;
-    std::string cooling_method;
-    std::string neighborhood_method;
-    Result(std::string graph_name, std::string calculated_path, int calculated_path_weight, std::string defined_path, int defined_path_weight, double time, int number_of_repeats, float alpha, float b, int era_length, std::string cooling_method, std::string neighborhood_method)
+    float beta;
+    float rho;
+    int iterations;
+    int number_of_ants;
+    float init_tau_param;
+    int quantity_of_pheromone;
+    std::string evaporation_method;
+    Result(std::string graph_name, std::string calculated_path, int calculated_path_weight, std::string defined_path, int defined_path_weight, double time, int number_of_repeats, float alpha, float beta, float rho,
+           int iterations, int number_of_ants, float init_tau_param, int quantity_of_pheromone, std::string evaporation_method)
     {
         this->graph_name = graph_name;
         this->calculated_path = calculated_path;
@@ -43,14 +46,17 @@ struct Result
         this->time = time;
         this->number_of_repeats = number_of_repeats;
         this->alpha = alpha;
-        this->b = b;
-        this->era_length = era_length;
-        this->cooling_method = cooling_method;
-        this->neighborhood_method = neighborhood_method;
+        this->beta = beta;
+        this->rho = rho;
+        this->iterations = iterations;
+        this->number_of_ants = number_of_ants;
+        this->init_tau_param = init_tau_param;
+        this->quantity_of_pheromone = quantity_of_pheromone;
+        this->evaporation_method = evaporation_method;
     }
     std::string toString()
     {
-        return (graph_name + "," + calculated_path + "," + to_string(calculated_path_weight) + "," + defined_path + "," + to_string(defined_path_weight) + "," + to_string(time) + "," + to_string(number_of_repeats) + "," + to_string(alpha) + "," + to_string(b) + "," + to_string(era_length) + "," + cooling_method + "," + neighborhood_method);
+        return (graph_name + "," + calculated_path + "," + to_string(calculated_path_weight) + "," + defined_path + "," + to_string(defined_path_weight) + "," + to_string(time) + "," + to_string(number_of_repeats) + "," + to_string(alpha) + "," + to_string(beta) + "," + to_string(rho) + "," + to_string(iterations) + "," + to_string(number_of_ants) + "," + to_string(init_tau_param) + "," + to_string(quantity_of_pheromone) + "," + evaporation_method);
     }
 };
 
@@ -59,7 +65,7 @@ void save_results(std::string results_file_name)
     std::cout << "Saving results" << endl;
     fstream fout;
     fout.open(results_file_name, ios::out);
-    fout << "graph_name,calculated_path,calculated_path_weight,defined_path,defined_path_weight,time,number_of_repeats,alpha,b,era_length,cooling_method,neighborhood_method" << endl;
+    fout << "graph_name,calculated_path,calculated_path_weight,defined_path,defined_path_weight,time,number_of_repeats,alpha,beta,rho,iterations,number_of_ants,init_tau_param,quantity_of_pheromone,evaporation_method" << endl;
     for (long unsigned int i = 0; i < results.size(); i++)
     {
         fout << results[i] << endl;
@@ -493,7 +499,7 @@ int main()
                 for (int j = 0; j < number_of_repeats; j++)
                 {
                     high_resolution_clock::time_point t_start = high_resolution_clock::now();
-                    answer = TSP_solve(alpha,beta,rho,iterations,number_of_ants,init_tau_param,quantity_of_pheromone,evaporation_method);
+                    answer = TSP_solve(alpha, beta, rho, iterations, number_of_ants, init_tau_param, quantity_of_pheromone, evaporation_method);
                     high_resolution_clock::time_point t_end = high_resolution_clock::now();
                     duration<double> time_span = duration_cast<duration<double>>(t_end - t_start);
                     int weight = answer.second;
@@ -516,8 +522,8 @@ int main()
                               << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl
                               << "Task " << i + 1 << " from " << tasks.size() << " | Repeat " << j + 1 << " from " << number_of_repeats << endl
                               << endl;
-                    // Result result = Result(graph_file_name, path, weight, shortest_path, stoi(shortest_path_weight), time_span.count(), number_of_repeats, alpha, b, era_length, tasks[i][5], tasks[i][6]);
-                    // results.push_back(result.toString());
+                    Result result = Result(graph_file_name, path, weight, shortest_path, stoi(shortest_path_weight), time_span.count(), number_of_repeats, alpha, beta, rho, iterations, number_of_ants, init_tau_param, quantity_of_pheromone, evaporation_method);
+                    results.push_back(result.toString());
                 }
             }
         }
