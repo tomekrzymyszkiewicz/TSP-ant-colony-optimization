@@ -8,7 +8,7 @@ The program reads data from the config.ini configuration file in the following s
 
 ```
 <results file name>
-<graph file name> <number of repeats> <alpha parameter> <beta parameter> <rho parameter> <number of iterations> <number of ants> <init tau parameter> <q cycles> <evaporation method> <correct TSP path weight> <correct TSP path> 
+<graph file name> <number of repeats> <alpha parameter> <beta parameter> <rho parameter> <number of iterations> <number of ants> <init tau parameter> <quantity of pheromone> <evaporation method> <correct TSP path weight> <correct TSP path> 
 ```
 - results file name - name of CSV file
 - graph file name - name of file with adjacency matrix of graph
@@ -19,7 +19,7 @@ The program reads data from the config.ini configuration file in the following s
 - number of iterations - 
 - number of ants - 
 - init tau parameter
-- q cycles - 
+- quantity of pheromone - 
 - evaporation method - 
 - correct TSP path weight - integer number
 - correct TSP path - sequence of integers number separated by space
