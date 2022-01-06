@@ -228,7 +228,7 @@ void load_config()
 int cost_of_permutation(vector<int> permutation)
 {
     int cost = 0;
-    for (int i = 0; i < permutation.size() - 1; i++)
+    for (long unsigned int i = 0; i < permutation.size() - 1; i++)
     {
         cost += current_graph_adjacency_matrix.matrix[permutation[i]][permutation[i + 1]];
     }
@@ -333,9 +333,9 @@ int select_vertex(ant current, float alpha, float beta, float **pheromone_matrix
         {
             denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)], alpha) * (float)pow(1 / (float)current_graph_adjacency_matrix.matrix[current.current_vertex][(*it)], beta);
         }
-        else
+        else // 0 costs edges case
         {
-            denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)], alpha) * (float)pow(1, beta);
+            denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)], alpha) * (float)pow(1 / 0.1, beta);
         }
     }
     for (int i = 1; i < number_of_current_graph_vertices; i++)
@@ -345,24 +345,32 @@ int select_vertex(ant current, float alpha, float beta, float **pheromone_matrix
             probabilities.push_back(make_pair(i, 0));
             continue;
         }
-        nominator = (float)pow(pheromone_matrix[current.current_vertex][i], alpha) * (float)pow(1 / (float)current_graph_adjacency_matrix.matrix[current.current_vertex][i], beta);
+        if (current_graph_adjacency_matrix.matrix[current.current_vertex][i] != 0)
+        {
+            nominator = (float)pow(pheromone_matrix[current.current_vertex][i], alpha) * (float)pow(1 / (float)current_graph_adjacency_matrix.matrix[current.current_vertex][i], beta);
+        }
+        else // 0 costs edges case
+        {
+            nominator = (float)pow(pheromone_matrix[current.current_vertex][i], alpha) * (float)pow(1 / 0.1, beta);
+        }
         probabilities.push_back(make_pair(i, nominator / denominator));
     }
     sort(probabilities.begin(), probabilities.end(), sort_by_sec);
     random_device rd;
     mt19937 gen(rd());
     uniform_real_distribution<> dis(0, 1);
-    float random = dis(gen);
-    float probabilities_sum = 0;
-    for (int i = 0; i < probabilities.size(); i++)
+    float probability = dis(gen);
+    float probabilities_sum = 0; //probabilites sum up to 1
+    for (long unsigned int i = 0; i < probabilities.size(); i++)
     {
         probabilities_sum += probabilities[i].second;
-        if (probabilities_sum > random)
+        if (probabilities_sum > probability)
             return probabilities[i].first;
     }
+    return INT32_MAX; // shouldn`t never be reached
 }
 
-float **evaporateCAS(float **pheromone_matrix, vector<ant> colony, float rho, int q_cycles)
+float **evaporateCAS(float **pheromone_matrix, vector<ant> colony, float rho, int quantity_of_pheromone)
 {
     for (int i = 0; i < number_of_current_graph_vertices; i++)
     {
@@ -374,9 +382,9 @@ float **evaporateCAS(float **pheromone_matrix, vector<ant> colony, float rho, in
     for (vector<ant>::iterator it = colony.begin(); it != colony.end(); it++)
     {
         int cost_of_path = cost_of_permutation(it->path);
-        for (int i = 0; i < it->path.size() - 1; i++)
+        for (long unsigned int i = 0; i < it->path.size() - 1; i++)
         {
-            pheromone_matrix[it->path[i]][it->path[i + 1]] += (float)q_cycles / cost_of_path;
+            pheromone_matrix[it->path[i]][it->path[i + 1]] += (float)quantity_of_pheromone / cost_of_path;
         }
     }
     return pheromone_matrix;
@@ -386,18 +394,10 @@ float **evaporateCAS(float **pheromone_matrix, vector<ant> colony, float rho, in
  * 
  * @return pair of calculated path and weight
  */
-pair<vector<int>, int> TSP_solve()
+pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.6, int iterations = 100, int number_of_ants = number_of_current_graph_vertices, float init_tau_param = 1, int quantity_of_pheromone = 100, string evaporation_method = "QAS")
 {
     vector<int> permutation = initial_permutation();
     int cost = cost_of_permutation(permutation) + current_graph_adjacency_matrix.matrix[0][permutation[0]] + current_graph_adjacency_matrix.matrix[permutation[permutation.size() - 1]][0];
-    int iterations = 100;
-    int number_of_ants = number_of_current_graph_vertices;
-    float alpha = 1; // pheromone factor
-    float rho = 0.6; // evaporation factor in range 0,1 0 - everything evaporate 1 - nothing evaporate
-    float beta = 3;  // edge length factor
-    float evaporation = 0.5;
-    float init_tau_param = 1;
-    int q_cycles = 100;
     float approximated_sol = approximated_solution_cost(permutation, alpha);
     float **pheromone_matrix = init_pheromone_matrix(number_of_ants, approximated_sol, init_tau_param);
     // defined number of iterations
@@ -421,7 +421,7 @@ pair<vector<int>, int> TSP_solve()
                 permutation = ant_it->path;
             }
         }
-        pheromone_matrix = evaporateCAS(pheromone_matrix, colony, rho, q_cycles);
+        pheromone_matrix = evaporateCAS(pheromone_matrix, colony, rho, quantity_of_pheromone);
     }
     permutation.insert(permutation.begin(), 0);
     permutation.push_back(0);
