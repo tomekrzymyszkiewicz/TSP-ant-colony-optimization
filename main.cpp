@@ -401,16 +401,35 @@ float **evaporateCAS(float **pheromone_matrix, vector<ant> colony, float rho, in
     }
     return pheromone_matrix;
 }
+
+
+float **evaporateQAS(float **pheromone_matrix, float rho)
+{
+    for (int i = 0; i < number_of_current_graph_vertices; i++)
+    {
+        for (int j = 0; j < number_of_current_graph_vertices; j++)
+        {
+            pheromone_matrix[i][j] *= rho;
+        }
+    }
+    return pheromone_matrix;
+}
+
+float **add_pheromone_QAS(float **pheromone_matrix, int i, int j, int quantity_of_pheromone)
+{
+    pheromone_matrix[i][j] += (float)quantity_of_pheromone/current_graph_adjacency_matrix.matrix[i][j];
+    return pheromone_matrix;
+}
 /**
  * TSP solving with simulated annealing method
  * 
  * @return pair of calculated path and weight
  */
-pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.6, int iterations = 100, int number_of_ants = number_of_current_graph_vertices, float init_tau_param = 1, int quantity_of_pheromone = 100, string evaporation_method = "CAS")
+pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.6, int iterations = 100, int number_of_ants = number_of_current_graph_vertices, float init_tau_param = 1, int quantity_of_pheromone = 100, string evaporation_method = "CAS", int defined_cost = 0)
 {
     vector<int> permutation = initial_permutation();
     int cost = cost_of_permutation(permutation) + current_graph_adjacency_matrix.matrix[0][permutation[0]] + current_graph_adjacency_matrix.matrix[permutation[permutation.size() - 1]][0];
-    float approximated_sol = approximated_solution_cost(permutation, alpha);
+    float approximated_sol = approximated_solution_cost(permutation, 0.6);
     float **pheromone_matrix = init_pheromone_matrix(number_of_ants, approximated_sol, init_tau_param);
     // defined number of iterations
     for (int iteration = 0; iteration < iterations; iteration++)
@@ -423,6 +442,8 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
             for (int i = 0; i < number_of_current_graph_vertices - 2; i++)
             {
                 int next_vertex = select_vertex((*ant_it), alpha, beta, pheromone_matrix);
+                if(evaporation_method == "QAS")
+                    pheromone_matrix = add_pheromone_QAS(pheromone_matrix,(*ant_it).current_vertex,next_vertex,quantity_of_pheromone);
                 (*ant_it).go_to_vertex(next_vertex);
             }
             vector<int> ant_permutation = ant_it->path;
@@ -433,7 +454,14 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
                 permutation = ant_it->path;
             }
         }
-        pheromone_matrix = evaporateCAS(pheromone_matrix, colony, rho, quantity_of_pheromone);
+        if(evaporation_method == "CAS"){
+            pheromone_matrix = evaporateCAS(pheromone_matrix, colony, rho, quantity_of_pheromone);
+        }
+        else if(evaporation_method == "QAS"){
+            pheromone_matrix = evaporateQAS(pheromone_matrix, rho);
+        }
+        std::cout << "Iteration:" << std::right << std::setw(12) << iteration << "| Cost: " << std::right << std::setw(8) << cost << "| Error: " << std::right << std::setw(8) << 100 * (cost - defined_cost) / (float)defined_cost << "%"
+                  << "\t\r" << std::flush;
     }
     permutation.insert(permutation.begin(), 0);
     permutation.push_back(0);
@@ -499,7 +527,7 @@ int main()
                 for (int j = 0; j < number_of_repeats; j++)
                 {
                     high_resolution_clock::time_point t_start = high_resolution_clock::now();
-                    answer = TSP_solve(alpha, beta, rho, iterations, number_of_ants, init_tau_param, quantity_of_pheromone, evaporation_method);
+                    answer = TSP_solve(alpha, beta, rho, iterations, number_of_ants, init_tau_param, quantity_of_pheromone, evaporation_method, stoi(shortest_path_weight));
                     high_resolution_clock::time_point t_end = high_resolution_clock::now();
                     duration<double> time_span = duration_cast<duration<double>>(t_end - t_start);
                     int weight = answer.second;
