@@ -37,3 +37,13 @@ main
 */m/*
 .vscode/*
 *.pdf
+*.aux
+*.fdb_latexmk
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.fls
+*.drawio
