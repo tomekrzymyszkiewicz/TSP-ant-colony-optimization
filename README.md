@@ -40,7 +40,7 @@ In the *graphs* folder there are files with example graphs that can be used to t
 | ftv70.txt       | 70                 | 1950                             |   
 | ch150.txt       | 150                | 6528                             |  
 | ftv170.txt      | 170                | 2755                             |    
-| gr202.tsp       | 202                | 40160                            |    
+| gr202.txt       | 202                | 40160                            |    
 | rbg323.txt      | 323                | 1326                             |   
 | pcb442.txt      | 442                | 50778                            |   
 | rgb443.txt      | 443                | 2720                             |   
