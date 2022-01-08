@@ -43,5 +43,5 @@ In the *graphs* folder there are files with example graphs that can be used to t
 | gr202.txt       | 202                | 40160                            |    
 | rbg323.txt      | 323                | 1326                             |   
 | pcb442.txt      | 442                | 50778                            |   
-| rgb443.txt      | 443                | 2720                             |   
+| rbg443.txt      | 443                | 2720                             |   
 | pr1002.txt      | 1002               | 259045                           |
