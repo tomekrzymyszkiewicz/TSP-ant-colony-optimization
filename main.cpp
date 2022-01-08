@@ -298,11 +298,6 @@ std::string print_vector(vector<int> printed_vector)
     return answer;
 }
 
-float approximated_solution_cost(vector<int> permutation, float alpha)
-{
-    return cost_of_permutation(permutation) * alpha;
-}
-
 float **init_pheromone_matrix(int number_of_ants, int number_of_vertices, float approximated_sol, float init_tau_param)
 {
     float **matrix = new float *[number_of_vertices];
@@ -433,8 +428,7 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
 {
     vector<int> permutation = initial_permutation();
     int cost = cost_of_permutation(permutation);
-    float approximated_sol = approximated_solution_cost(permutation, 0.6);
-    float **pheromone_matrix = init_pheromone_matrix(number_of_ants, number_of_current_graph_vertices, approximated_sol, init_tau_param);
+    float **pheromone_matrix = init_pheromone_matrix(number_of_ants, number_of_current_graph_vertices, cost, init_tau_param);
     // defined number of iterations
     for (int iteration = 0; iteration < iterations; iteration++)
     {
@@ -443,7 +437,7 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
         int ant_count = 1;
         for (vector<ant>::iterator ant_it = colony.begin(); ant_it != colony.end(); ant_it++)
         {
-            std::cout << "Iteration:" << std::right << std::setw(4) << iteration <<"|Ant:" << std::right << std::setw(4) << ant_count << "| Cost: " << std::right << std::setw(8) << cost << "| Error: " << std::right << std::setw(8) << 100 * (cost - defined_cost) / (float)defined_cost << "%" << "\t\r" << std::flush;
+            std::cout << "Iteration:" << std::right << std::setw(4) << iteration+1 <<"|Ant:" << std::right << std::setw(4) << ant_count << "| Cost: " << std::right << std::setw(8) << cost << "| Error: " << std::right << std::setw(8) << 100 * (cost - defined_cost) / (float)defined_cost << "%" << "\t\r" << std::flush;
             ant_count++;
             // travel of ant_it (N-2 moves)
             for (int i = 0; i < number_of_current_graph_vertices - 2; i++)
