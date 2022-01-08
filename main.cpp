@@ -303,14 +303,14 @@ float approximated_solution_cost(vector<int> permutation, float alpha)
     return cost_of_permutation(permutation) * alpha;
 }
 
-float **init_pheromone_matrix(int number_of_ants, float approximated_sol, float init_tau_param)
+float **init_pheromone_matrix(int number_of_ants, int number_of_vertices, float approximated_sol, float init_tau_param)
 {
-    float **matrix = new float *[number_of_ants];
+    float **matrix = new float *[number_of_vertices];
     float init_tau = (number_of_ants / approximated_sol) * init_tau_param;
-    for (int i = 0; i < number_of_ants; i++)
+    for (int i = 0; i < number_of_vertices; i++)
     {
-        matrix[i] = new float[number_of_ants];
-        for (int j = 0; j < number_of_ants; j++)
+        matrix[i] = new float[number_of_vertices];
+        for (int j = 0; j < number_of_vertices; j++)
         {
             matrix[i][j] = init_tau;
         }
@@ -434,14 +434,17 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
     vector<int> permutation = initial_permutation();
     int cost = cost_of_permutation(permutation) + current_graph_adjacency_matrix.matrix[0][permutation[0]] + current_graph_adjacency_matrix.matrix[permutation[permutation.size() - 1]][0];
     float approximated_sol = approximated_solution_cost(permutation, 0.6);
-    float **pheromone_matrix = init_pheromone_matrix(number_of_ants, approximated_sol, init_tau_param);
+    float **pheromone_matrix = init_pheromone_matrix(number_of_ants, number_of_current_graph_vertices, approximated_sol, init_tau_param);
     // defined number of iterations
     for (int iteration = 0; iteration < iterations; iteration++)
     {
         vector<ant> colony = init_colony(number_of_ants);
         // travel of every ant
+        int ant_count = 1;
         for (vector<ant>::iterator ant_it = colony.begin(); ant_it != colony.end(); ant_it++)
         {
+            std::cout << "Iteration:" << std::right << std::setw(4) << iteration <<"|Ant:" << std::right << std::setw(4) << ant_count << "| Cost: " << std::right << std::setw(8) << cost << "| Error: " << std::right << std::setw(8) << 100 * (cost - defined_cost) / (float)defined_cost << "%" << "\t\r" << std::flush;
+            ant_count++;
             // travel of ant_it (N-2 moves)
             for (int i = 0; i < number_of_current_graph_vertices - 2; i++)
             {
@@ -456,6 +459,8 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
                 cost = ant_cost;
                 permutation = ant_it->path;
             }
+            
+            // cout<<"ant"<<endl;
         }
         if(evaporation_method == "CAS"){
             pheromone_matrix = evaporateCAS(pheromone_matrix, colony, rho, quantity_of_pheromone);
@@ -463,8 +468,8 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
         else if(evaporation_method == "QAS"){
             pheromone_matrix = evaporateQAS(pheromone_matrix, rho);
         }
-        std::cout << "Iteration:" << std::right << std::setw(12) << iteration << "| Cost: " << std::right << std::setw(8) << cost << "| Error: " << std::right << std::setw(8) << 100 * (cost - defined_cost) / (float)defined_cost << "%"
-                  << "\t\r" << std::flush;
+        // cout<<"iter"<<endl;
+        std::cout << "Iteration:" << std::right << std::setw(12) << iteration << "| Cost: " << std::right << std::setw(8) << cost << "| Error: " << std::right << std::setw(8) << 100 * (cost - defined_cost) / (float)defined_cost << "%" << "\t\r" << std::flush;
     }
     for (int i = 0; i < number_of_current_graph_vertices; i++)
     {
