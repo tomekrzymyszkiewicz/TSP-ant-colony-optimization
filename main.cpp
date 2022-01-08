@@ -239,7 +239,7 @@ void load_config()
 
 int cost_of_permutation(vector<int> permutation)
 {
-    int cost = 0;
+    int cost = current_graph_adjacency_matrix.matrix[0][permutation[0]]+current_graph_adjacency_matrix.matrix[permutation[permutation.size()-1]][0];
     for (long unsigned int i = 0; i < permutation.size() - 1; i++)
     {
         cost += current_graph_adjacency_matrix.matrix[permutation[i]][permutation[i + 1]];
@@ -392,7 +392,7 @@ float **evaporateCAS(float **pheromone_matrix, vector<ant> colony, float rho, in
     }
     for (vector<ant>::iterator it = colony.begin(); it != colony.end(); it++)
     {
-        int cost_of_path = cost_of_permutation(it->path) + current_graph_adjacency_matrix.matrix[0][it->path[0]] + current_graph_adjacency_matrix.matrix[it->path[it->path.size() - 1]][0];
+        int cost_of_path = cost_of_permutation(it->path);
         for (long unsigned int i = 0; i < it->path.size() - 1; i++)
         {
             pheromone_matrix[it->path[i]][it->path[i + 1]] += (float)quantity_of_pheromone / cost_of_path;
@@ -432,7 +432,7 @@ float **add_pheromone_QAS(float **pheromone_matrix, int i, int j, int quantity_o
 pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.6, int iterations = 100, int number_of_ants = number_of_current_graph_vertices, float init_tau_param = 1, int quantity_of_pheromone = 100, string evaporation_method = "CAS", int defined_cost = 0)
 {
     vector<int> permutation = initial_permutation();
-    int cost = cost_of_permutation(permutation) + current_graph_adjacency_matrix.matrix[0][permutation[0]] + current_graph_adjacency_matrix.matrix[permutation[permutation.size() - 1]][0];
+    int cost = cost_of_permutation(permutation);
     float approximated_sol = approximated_solution_cost(permutation, 0.6);
     float **pheromone_matrix = init_pheromone_matrix(number_of_ants, number_of_current_graph_vertices, approximated_sol, init_tau_param);
     // defined number of iterations
@@ -453,7 +453,7 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
                     pheromone_matrix = add_pheromone_QAS(pheromone_matrix,(*ant_it).current_vertex,next_vertex,quantity_of_pheromone);
                 (*ant_it).go_to_vertex(next_vertex);
             }
-            int ant_cost = cost_of_permutation(ant_it->path) + current_graph_adjacency_matrix.matrix[0][ant_it->path[0]] + current_graph_adjacency_matrix.matrix[ant_it->path[ant_it->path.size() - 1]][0];
+            int ant_cost = cost_of_permutation(ant_it->path);
             if (ant_cost < cost)
             {
                 cost = ant_cost;
