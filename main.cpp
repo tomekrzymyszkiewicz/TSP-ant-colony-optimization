@@ -301,7 +301,7 @@ std::string print_vector(vector<int> printed_vector)
 float **init_pheromone_matrix(int number_of_ants, int number_of_vertices, float approximated_sol, float init_tau_param)
 {
     float **matrix = new float *[number_of_vertices];
-    float init_tau = (number_of_ants / approximated_sol) * init_tau_param;
+    float init_tau = ((float)number_of_ants / approximated_sol) * init_tau_param;
     for (int i = 0; i < number_of_vertices; i++)
     {
         matrix[i] = new float[number_of_vertices];
@@ -494,7 +494,7 @@ int main()
             float rho = stof(tasks[i][4]);
             int iterations = stoi(tasks[i][5]);
             int number_of_ants = stoi(tasks[i][6]);
-            float init_tau_param = stoi(tasks[i][7]);
+            float init_tau_param = stof(tasks[i][7]);
             int quantity_of_pheromone = stoi(tasks[i][8]);
             std::string evaporation_method = tasks[i][9];
             std::string shortest_path_weight = tasks[i][10];
