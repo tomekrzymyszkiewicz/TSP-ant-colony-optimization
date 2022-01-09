@@ -9,7 +9,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
-#include "structuresw0.h"
+#include "structures.h"
 using namespace std;
 using namespace std::chrono;
 
@@ -420,7 +420,7 @@ float **add_pheromone_QAS(float **pheromone_matrix, int i, int j, int quantity_o
     return pheromone_matrix;
 }
 
-bool check_colony_paths(vector<ant> colony){
+// bool check_colony_paths(vector<ant> colony){
     // while(colony[0].path[0] != 0){
     //     std::rotate(colony[0].path.begin(),colony[0].path.end()-1,colony[0].path.end());
     // }
@@ -437,18 +437,18 @@ bool check_colony_paths(vector<ant> colony){
     //     }
     // }
     // return true;
-    int prev_cost = cost_of_permutation(colony[0].path);
-    for (vector<ant>::iterator ant_it = colony.begin()+1; ant_it != colony.end(); ant_it++){
-        int cost = cost_of_permutation((*ant_it).path);
-        if(prev_cost == cost){
-            prev_cost = cost;
-        }
-        else{
-            return false;
-        }
-    }
-    return true;
-}
+//     int prev_cost = cost_of_permutation(colony[0].path);
+//     for (vector<ant>::iterator ant_it = colony.begin()+1; ant_it != colony.end(); ant_it++){
+//         int cost = cost_of_permutation((*ant_it).path);
+//         if(prev_cost == cost){
+//             prev_cost = cost;
+//         }
+//         else{
+//             return false;
+//         }
+//     }
+//     return true;
+// }
 
 /**
  * TSP solving with simulated annealing method
@@ -492,9 +492,9 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
         else if(evaporation_method == "QAS"){
             pheromone_matrix = evaporateQAS(pheromone_matrix, rho);
         }
-        if(check_colony_paths(colony)){
-            break;
-        }
+        // if(check_colony_paths(colony)){
+        //     break;
+        // }
     }
     for (int i = 0; i < number_of_current_graph_vertices; i++)
     {
