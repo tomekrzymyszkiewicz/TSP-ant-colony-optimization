@@ -9,12 +9,12 @@ struct ant{
     std::vector<int> path;
     std::vector<int> unvisited;
     ant(){
-        current_vertex = 1;
+        current_vertex = 0;
     }
-    ant(int number_of_vertices, int start_vertex=1){
+    ant(int number_of_vertices, int start_vertex=0){
         current_vertex = start_vertex;
         path.push_back(start_vertex);
-        for(int i = 1; i < number_of_vertices; i++){
+        for(int i = 0; i < number_of_vertices; i++){
             if(i != start_vertex)
                 unvisited.push_back(i);
         }

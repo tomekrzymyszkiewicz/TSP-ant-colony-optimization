@@ -9,7 +9,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
-#include "structures.h"
+#include "structuresw0.h"
 using namespace std;
 using namespace std::chrono;
 
@@ -239,7 +239,7 @@ void load_config()
 
 int cost_of_permutation(vector<int> permutation)
 {
-    int cost = current_graph_adjacency_matrix.matrix[0][permutation[0]]+current_graph_adjacency_matrix.matrix[permutation[permutation.size()-1]][0];
+    int cost = current_graph_adjacency_matrix.matrix[permutation[permutation.size()-1]][permutation[0]];
     for (long unsigned int i = 0; i < permutation.size() - 1; i++)
     {
         cost += current_graph_adjacency_matrix.matrix[permutation[i]][permutation[i + 1]];
@@ -251,11 +251,11 @@ vector<int> initial_permutation()
 {
     vector<int> permutation;
     vector<int> unused;
-    for (int i = 2; i < number_of_current_graph_vertices; i++)
+    for (int i = 1; i < number_of_current_graph_vertices; i++)
         unused.push_back(i);
-    int prev_v = 1;
+    int prev_v = 0;
     permutation.push_back(prev_v);
-    for (int i = 1; i < number_of_current_graph_vertices - 1; i++)
+    for (int i = 0; i < number_of_current_graph_vertices - 1; i++)
     {
         int min_v = 1;
         int min_cost = INT32_MAX;
@@ -318,7 +318,7 @@ vector<ant> init_colony(int number_of_ants)
     vector<ant> colony;
     for (int i = 0; i < number_of_ants; i++)
     {
-        colony.push_back(ant(number_of_current_graph_vertices, (i % (number_of_current_graph_vertices - 1)) + 1));
+        colony.push_back(ant(number_of_current_graph_vertices, (i % (number_of_current_graph_vertices))));
     }
     return colony;
 }
@@ -344,7 +344,7 @@ int select_vertex(ant current, float alpha, float beta, float **pheromone_matrix
             denominator += (float)pow(pheromone_matrix[current.current_vertex][(*it)], alpha) * (float)pow(1 / 0.1, beta);
         }
     }
-    for (int i = 1; i < number_of_current_graph_vertices; i++)
+    for (int i = 0; i < number_of_current_graph_vertices; i++)
     {
         if (find(current.path.begin(), current.path.end(), i) != current.path.end() || i == current.current_vertex)
         {
@@ -419,6 +419,37 @@ float **add_pheromone_QAS(float **pheromone_matrix, int i, int j, int quantity_o
     }
     return pheromone_matrix;
 }
+
+bool check_colony_paths(vector<ant> colony){
+    // while(colony[0].path[0] != 0){
+    //     std::rotate(colony[0].path.begin(),colony[0].path.end()-1,colony[0].path.end());
+    // }
+    // vector<int> prev_path = colony[0].path;
+    // for (vector<ant>::iterator ant_it = colony.begin()+1; ant_it != colony.end(); ant_it++){
+    //     while((*ant_it).path[0] != 0){
+    //         std::rotate((*ant_it).path.begin(),(*ant_it).path.end()-1,(*ant_it).path.end());
+    //     }
+    //     if(prev_path == (*ant_it).path){
+    //         prev_path = (*ant_it).path;
+    //     }
+    //     else{
+    //         return false;
+    //     }
+    // }
+    // return true;
+    int prev_cost = cost_of_permutation(colony[0].path);
+    for (vector<ant>::iterator ant_it = colony.begin()+1; ant_it != colony.end(); ant_it++){
+        int cost = cost_of_permutation((*ant_it).path);
+        if(prev_cost == cost){
+            prev_cost = cost;
+        }
+        else{
+            return false;
+        }
+    }
+    return true;
+}
+
 /**
  * TSP solving with simulated annealing method
  * 
@@ -440,13 +471,14 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
             std::cout << "Iteration:" << std::right << std::setw(4) << iteration+1 <<"|Ant:" << std::right << std::setw(4) << ant_count << "| Cost: " << std::right << std::setw(8) << cost << "| Error: " << std::right << std::setw(8) << 100 * (cost - defined_cost) / (float)defined_cost << "%" << "\t\r" << std::flush;
             ant_count++;
             // travel of ant_it (N-2 moves)
-            for (int i = 0; i < number_of_current_graph_vertices - 2; i++)
+            for (int i = 0; i < number_of_current_graph_vertices - 1; i++)
             {
                 int next_vertex = select_vertex((*ant_it), alpha, beta, pheromone_matrix);
                 if(evaporation_method == "QAS")
                     pheromone_matrix = add_pheromone_QAS(pheromone_matrix,(*ant_it).current_vertex,next_vertex,quantity_of_pheromone);
                 (*ant_it).go_to_vertex(next_vertex);
             }
+            
             int ant_cost = cost_of_permutation(ant_it->path);
             if (ant_cost < cost)
             {
@@ -460,13 +492,18 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
         else if(evaporation_method == "QAS"){
             pheromone_matrix = evaporateQAS(pheromone_matrix, rho);
         }
+        if(check_colony_paths(colony)){
+            break;
+        }
     }
     for (int i = 0; i < number_of_current_graph_vertices; i++)
     {
         delete[] pheromone_matrix[i];
     }
     delete[] pheromone_matrix;
-    permutation.insert(permutation.begin(), 0);
+    while(permutation[0] != 0){
+        std::rotate(permutation.begin(),permutation.end()-1,permutation.end());
+    }
     permutation.push_back(0);
     return make_pair(permutation, cost);
 }
