@@ -4,22 +4,6 @@ import numpy as np
 import pandas as pd
 import csv
 import re
-# 0graph_name,
-# 1calculated_path,
-# 2calculated_path_weight,
-# 3defined_path,
-# 4defined_path_weight,
-# 5time,
-# 6number_of_repeats,
-# 7alpha,
-# 8beta,
-# 9rho,
-# 10iterations,
-# 11number_of_ants,
-# 12init_tau_param,
-# 13quantity_of_pheromone,
-# 14evaporation_method
-
 
 def main():
     if len(sys.argv) > 1:
