@@ -34,14 +34,14 @@ def main():
             linestyle='dashed', linewidth=3, label='CAS(błąd)')
     ax.set_ylabel('Stosunek błędu do wartości optymalnej [%]', color=col1)
     ax.set_xlabel('Liczba wierzchołków w grafie')
-    ax.legend()
+    ax.legend(loc=0)
     ax2 = ax.twinx()
     ax2.plot(x, y_time_QAS, color=col2, marker='o',
              linestyle='solid', linewidth=3, label='QAS(czas)')
     ax2.plot(x, y_time_CAS, color=col2, marker='o',
              linestyle='dashed', linewidth=3, label='CAS(czas)')
     ax2.set_ylabel('Czas wykonania algorytmu [s]', color=col2)
-    ax2.legend()
+    ax2.legend(loc=1)
     plt.show()
 
 
