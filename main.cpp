@@ -420,35 +420,6 @@ float **add_pheromone_QAS(float **pheromone_matrix, int i, int j, int quantity_o
     return pheromone_matrix;
 }
 
-// bool check_colony_paths(vector<ant> colony){
-    // while(colony[0].path[0] != 0){
-    //     std::rotate(colony[0].path.begin(),colony[0].path.end()-1,colony[0].path.end());
-    // }
-    // vector<int> prev_path = colony[0].path;
-    // for (vector<ant>::iterator ant_it = colony.begin()+1; ant_it != colony.end(); ant_it++){
-    //     while((*ant_it).path[0] != 0){
-    //         std::rotate((*ant_it).path.begin(),(*ant_it).path.end()-1,(*ant_it).path.end());
-    //     }
-    //     if(prev_path == (*ant_it).path){
-    //         prev_path = (*ant_it).path;
-    //     }
-    //     else{
-    //         return false;
-    //     }
-    // }
-    // return true;
-//     int prev_cost = cost_of_permutation(colony[0].path);
-//     for (vector<ant>::iterator ant_it = colony.begin()+1; ant_it != colony.end(); ant_it++){
-//         int cost = cost_of_permutation((*ant_it).path);
-//         if(prev_cost == cost){
-//             prev_cost = cost;
-//         }
-//         else{
-//             return false;
-//         }
-//     }
-//     return true;
-// }
 
 /**
  * TSP solving with simulated annealing method
@@ -492,9 +463,6 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
         else if(evaporation_method == "QAS"){
             pheromone_matrix = evaporateQAS(pheromone_matrix, rho);
         }
-        // if(check_colony_paths(colony)){
-        //     break;
-        // }
     }
     for (int i = 0; i < number_of_current_graph_vertices; i++)
     {
