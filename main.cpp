@@ -239,7 +239,7 @@ void load_config()
 
 int cost_of_permutation(vector<int> permutation)
 {
-    int cost = current_graph_adjacency_matrix.matrix[permutation[permutation.size()-1]][permutation[0]];
+    int cost = current_graph_adjacency_matrix.matrix[permutation[permutation.size() - 1]][permutation[0]];
     for (long unsigned int i = 0; i < permutation.size() - 1; i++)
     {
         cost += current_graph_adjacency_matrix.matrix[permutation[i]][permutation[i + 1]];
@@ -371,9 +371,11 @@ int select_vertex(ant current, float alpha, float beta, float **pheromone_matrix
     {
         probabilities_sum += probabilities[i].second;
         if (probabilities_sum > probability)
+        {
             return probabilities[i].first;
+        }
     }
-    return INT32_MAX; // shouldn`t never be reached
+    return current.unvisited[0];
 }
 
 float **evaporateCAS(float **pheromone_matrix, vector<ant> colony, float rho, int quantity_of_pheromone)
@@ -396,7 +398,6 @@ float **evaporateCAS(float **pheromone_matrix, vector<ant> colony, float rho, in
     return pheromone_matrix;
 }
 
-
 float **evaporateQAS(float **pheromone_matrix, float rho)
 {
     for (int i = 0; i < number_of_current_graph_vertices; i++)
@@ -411,15 +412,16 @@ float **evaporateQAS(float **pheromone_matrix, float rho)
 
 float **add_pheromone_QAS(float **pheromone_matrix, int i, int j, int quantity_of_pheromone)
 {
-    if(current_graph_adjacency_matrix.matrix[i][j] > 0){
-        pheromone_matrix[i][j] += (float)quantity_of_pheromone/current_graph_adjacency_matrix.matrix[i][j];
+    if (current_graph_adjacency_matrix.matrix[i][j] > 0)
+    {
+        pheromone_matrix[i][j] += (float)quantity_of_pheromone / current_graph_adjacency_matrix.matrix[i][j];
     }
-    else{
-        pheromone_matrix[i][j] += (float)quantity_of_pheromone/0.1;
+    else
+    {
+        pheromone_matrix[i][j] += (float)quantity_of_pheromone / 0.1;
     }
     return pheromone_matrix;
 }
-
 
 /**
  * TSP solving with simulated annealing method
@@ -445,11 +447,11 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
             for (int i = 0; i < number_of_current_graph_vertices - 1; i++)
             {
                 int next_vertex = select_vertex((*ant_it), alpha, beta, pheromone_matrix);
-                if(evaporation_method == "QAS")
-                    pheromone_matrix = add_pheromone_QAS(pheromone_matrix,(*ant_it).current_vertex,next_vertex,quantity_of_pheromone);
+                if (evaporation_method == "QAS")
+                    pheromone_matrix = add_pheromone_QAS(pheromone_matrix, (*ant_it).current_vertex, next_vertex, quantity_of_pheromone);
                 (*ant_it).go_to_vertex(next_vertex);
             }
-            
+
             int ant_cost = cost_of_permutation(ant_it->path);
             if (ant_cost < cost)
             {
@@ -457,10 +459,12 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
                 permutation = ant_it->path;
             }
         }
-        if(evaporation_method == "CAS"){
+        if (evaporation_method == "CAS")
+        {
             pheromone_matrix = evaporateCAS(pheromone_matrix, colony, rho, quantity_of_pheromone);
         }
-        else if(evaporation_method == "QAS"){
+        else if (evaporation_method == "QAS")
+        {
             pheromone_matrix = evaporateQAS(pheromone_matrix, rho);
         }
     }
@@ -469,8 +473,9 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
         delete[] pheromone_matrix[i];
     }
     delete[] pheromone_matrix;
-    while(permutation[0] != 0){
-        std::rotate(permutation.begin(),permutation.end()-1,permutation.end());
+    while (permutation[0] != 0)
+    {
+        std::rotate(permutation.begin(), permutation.end() - 1, permutation.end());
     }
     permutation.push_back(0);
     return make_pair(permutation, cost);
