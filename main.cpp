@@ -443,7 +443,7 @@ pair<vector<int>, int> TSP_solve(float alpha = 1, float beta = 3, float rho = 0.
         {
             std::cout << "Iteration:" << std::right << std::setw(4) << iteration+1 <<"|Ant:" << std::right << std::setw(4) << ant_count << "| Cost: " << std::right << std::setw(8) << cost << "| Error: " << std::right << std::setw(8) << 100 * (cost - defined_cost) / (float)defined_cost << "%" << "\t\r" << std::flush;
             ant_count++;
-            // travel of ant_it (N-2 moves)
+            // travel of ant_it (N-1 moves)
             for (int i = 0; i < number_of_current_graph_vertices - 1; i++)
             {
                 int next_vertex = select_vertex((*ant_it), alpha, beta, pheromone_matrix);
