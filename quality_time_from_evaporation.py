@@ -27,21 +27,20 @@ def main():
                      for i in range(len(data)) if data[i][5] == 'CAS']
     col1 = 'steelblue'
     col2 = 'red'
-    _, ax = plt.subplots()
-    ax.plot(x, y_quality_QAS, color=col1, marker='o',
-            linestyle='solid', linewidth=3, label='QAS(błąd)')
-    ax.plot(x, y_quality_CAS, color=col1, marker='o',
-            linestyle='dashed', linewidth=3, label='CAS(błąd)')
-    ax.set_ylabel('Stosunek błędu do wartości optymalnej [%]', color=col1)
-    ax.set_xlabel('Liczba wierzchołków w grafie')
-    ax.legend(loc=0)
-    ax2 = ax.twinx()
-    ax2.plot(x, y_time_QAS, color=col2, marker='o',
-             linestyle='solid', linewidth=3, label='QAS(czas)')
-    ax2.plot(x, y_time_CAS, color=col2, marker='o',
-             linestyle='dashed', linewidth=3, label='CAS(czas)')
-    ax2.set_ylabel('Czas wykonania algorytmu [s]', color=col2)
-    ax2.legend(loc=1)
+    _, ax_time = plt.subplots()
+    _, ax_quality = plt.subplots()
+    plt.figure(1)
+    ax_quality.plot(x, y_quality_QAS, marker='o', label='QAS')
+    ax_quality.plot(x, y_quality_CAS, marker='o', label='CAS')
+    ax_quality.set_ylabel('Stosunek błędu do wartości optymalnej [%]')
+    ax_quality.set_xlabel('Liczba wierzchołków w grafie')
+    ax_quality.legend()
+    plt.figure(2)
+    ax_time.plot(x, y_time_QAS, marker='o', label='QAS')
+    ax_time.plot(x, y_time_CAS, marker='o', label='CAS')
+    ax_time.set_ylabel('Czas wykonania algorytmu [s]')
+    ax_time.set_xlabel('Liczba wierzchołków w grafie')
+    ax_time.legend()
     plt.show()
 
 
