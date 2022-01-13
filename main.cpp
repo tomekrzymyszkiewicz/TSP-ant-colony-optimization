@@ -560,7 +560,7 @@ int main()
                               << "Defined weight:    " << shortest_path_weight << endl
                               << "Error: " << 100 * (weight - stoi(shortest_path_weight)) / stof(shortest_path_weight) << "%"
                               << endl
-                              << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl
+                              << "Time: " << (double)time_span.count() << " s" << endl
                               << "Task " << i + 1 << " from " << tasks.size() << " | Repeat " << j + 1 << " from " << number_of_repeats << endl
                               << endl;
                     Result result = Result(graph_file_name, path, weight, shortest_path, stoi(shortest_path_weight), time_span.count(), number_of_repeats, alpha, beta, rho, iterations, number_of_ants, init_tau_param, quantity_of_pheromone, evaporation_method);
